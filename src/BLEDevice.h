@@ -22,6 +22,7 @@
 
 #include <Arduino.h>
 
+#include "remote/BLERemoteAdvertisingData.h"
 #include "BLEService.h"
 
 enum BLEDeviceEvent {
@@ -96,7 +97,7 @@ protected:
 
   bool hasAddress(uint8_t addressType, uint8_t address[6]);
 
-  void setAdvertisementData(uint8_t type, uint8_t eirDataLength, uint8_t eirData[], int8_t rssi);
+  void setAdvertisingData(uint8_t eirDataLength, uint8_t eirData[], int8_t rssi);
   void setScanResponseData(uint8_t eirDataLength, uint8_t eirData[], int8_t rssi);
 
   bool discovered();
@@ -104,10 +105,11 @@ protected:
 private:
   uint8_t _addressType;
   uint8_t _address[6];
-  uint8_t _advertisementTypeMask;
-  uint8_t _eirDataLength;
-  uint8_t _eirData[31 * 2];
   int8_t _rssi;
+
+  bool _discovered;
+  BLERemoteAdvertisingData _advertisingData;
+  BLERemoteAdvertisingData _scanResponseData;
 };
 
 #endif

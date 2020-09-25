@@ -28,6 +28,9 @@
 #define GAP_ADV_SCAN_IND (0x02)
 #define GAP_ADV_NONCONN_IND (0x03)
 
+#define AD_TYPE_ADVERTISING (0x03)
+#define AD_TYPE_SCANRESPONSE (0x04)
+
 GAPClass::GAPClass() :
   _advertising(false),
   _scanning(false),
@@ -188,11 +191,11 @@ void GAPClass::handleLeAdvertisingReport(uint8_t type, uint8_t addressType, uint
     return;
   }
 
-  if (_discoverEventHandler && type == 0x03) {
+  if (_discoverEventHandler && type == AD_TYPE_ADVERTISING) {
     // call event handler and skip adding to discover list
     BLEDevice device(addressType, address);
 
-    device.setAdvertisementData(type, eirLength, eirData, rssi);
+    device.setAdvertisingData(eirLength, eirData, rssi);
 
     if (matchesScanFilter(device)) {
       _discoverEventHandler(device);
@@ -226,8 +229,8 @@ void GAPClass::handleLeAdvertisingReport(uint8_t type, uint8_t addressType, uint
     discoveredIndex = _discoveredDevices.size() - 1;
   }
 
-  if (type != 0x04) {
-    discoveredDevice->setAdvertisementData(type, eirLength, eirData, rssi);
+  if (type != AD_TYPE_SCANRESPONSE) {
+    discoveredDevice->setAdvertisingData(eirLength, eirData, rssi);
   } else {
     discoveredDevice->setScanResponseData(eirLength, eirData, rssi);
   }

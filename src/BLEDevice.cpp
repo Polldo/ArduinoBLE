@@ -26,18 +26,16 @@
 #include "BLEDevice.h"
 
 BLEDevice::BLEDevice() :
-  _advertisementTypeMask(0),
-  _eirDataLength(0),
-  _rssi(127)
+  _rssi(127),
+  _discovered(false)
 {
   memset(_address, 0x00, sizeof(_address));
 }
 
 BLEDevice::BLEDevice(uint8_t addressType, uint8_t address[6]) :
   _addressType(addressType),
-  _advertisementTypeMask(0),
-  _eirDataLength(0),
-  _rssi(127)
+  _rssi(127),
+  _discovered(false)
 {
   memcpy(_address, address, sizeof(_address));
 }
@@ -97,52 +95,17 @@ bool BLEDevice::hasAdvertisedServiceUuid(int index) const
 
 int BLEDevice::advertisedServiceUuidCount() const
 {
-  int advertisedServiceCount = 0;
-
-  for (unsigned char i = 0; i < _eirDataLength;) {
-    int eirLength = _eirData[i++];
-    int eirType = _eirData[i++];
-
-    if (eirType == 0x02 || eirType == 0x03 || eirType == 0x06 || eirType == 0x07) {
-      int uuidLength;
-
-      if (eirType == 0x02 || eirType == 0x03) {
-        uuidLength = 2;
-      } else /*if (eirType == 0x06 || eirType == 0x07)*/ {
-        uuidLength = 16;
-      }
-
-      for (int j = 0; j < (eirLength - 1); j += uuidLength) {
-        advertisedServiceCount++;
-      }
-    }
-
-    i += (eirLength - 1);
-  }
-
-  return advertisedServiceCount;
+  int count = _advertisingData.advertisedServiceUuidCount();
+  count += _scanResponseData.advertisedServiceUuidCount();
+  return count;
 }
 
 String BLEDevice::localName() const
 {
-  String localName = "";
-
-  for (int i = 0; i < _eirDataLength;) {
-    int eirLength = _eirData[i++];
-    int eirType = _eirData[i++];
-
-    if (eirType == 0x08 || eirType == 0x09) {
-      localName.reserve(eirLength - 1);
-
-      for (int j = 0; j < (eirLength - 1); j++) {
-        localName += (char)_eirData[i + j];
-      }
-      break;
-    }
-
-    i += (eirLength - 1);
+  String localName = _advertisingData.localName();
+  if (!localName.length()) {
+    localName = _scanResponseData.localName();
   }
-
   return localName;
 }
 
@@ -153,34 +116,15 @@ String BLEDevice::advertisedServiceUuid() const
 
 String BLEDevice::advertisedServiceUuid(int index) const
 {
-  String serviceUuid;
-  int uuidIndex = 0;
-
-  for (unsigned char i = 0; i < _eirDataLength;) {
-    int eirLength = _eirData[i++];
-    int eirType = _eirData[i++];
-
-    if (eirType == 0x02 || eirType == 0x03 || eirType == 0x06 || eirType == 0x07) {
-      int uuidLength;
-
-      if (eirType == 0x02 || eirType == 0x03) {
-        uuidLength = 2;
-      } else /*if (eirType == 0x06 || eirType == 0x07)*/ {
-        uuidLength = 16;
-      }
-
-      for (int j = 0; j < (eirLength - 1); j += uuidLength) {
-        if (uuidIndex == index) {
-          serviceUuid = BLEUuid::uuidToString(&_eirData[i + j * uuidLength], uuidLength);
-        }
-
-        uuidIndex++;
-      }
-    }
-
-    i += (eirLength - 1);
+  // Analyze advertising data count to understand where the uuid should be (advData or scanData)
+  String serviceUuid = "";
+  int countServicesInAdvertising = _advertisingData.advertisedServiceUuidCount();
+  if (index < countServicesInAdvertising) {
+    serviceUuid = _advertisingData.advertisedServiceUuid(index);
+  } else {
+    index -= countServicesInAdvertising;
+    serviceUuid = _scanResponseData.advertisedServiceUuid(index);
   }
-
   return serviceUuid;
 }
 
@@ -488,25 +432,22 @@ bool BLEDevice::hasAddress(uint8_t addressType, uint8_t address[6])
   return (_addressType == addressType) && (memcmp(_address, address, sizeof(_address)) == 0);
 }
 
-void BLEDevice::setAdvertisementData(uint8_t type, uint8_t eirDataLength, uint8_t eirData[], int8_t rssi)
+void BLEDevice::setAdvertisingData(uint8_t eirDataLength, uint8_t eirData[], int8_t rssi)
 {
-  _advertisementTypeMask = (1 << type);
-  _eirDataLength = eirDataLength;
-  memcpy(_eirData, eirData, eirDataLength);
+  _discovered = true;
+  _advertisingData.setData(eirDataLength, eirData);
   _rssi = rssi;
 }
 
 void BLEDevice::setScanResponseData(uint8_t eirDataLength, uint8_t eirData[], int8_t rssi)
 {
-  _advertisementTypeMask |= (1 << 0x04);
-  memcpy(&_eirData[_eirDataLength], eirData, eirDataLength);
-  _eirDataLength += eirDataLength;
+  _discovered = true;
+  _scanResponseData.setData(eirDataLength, eirData);
   _rssi = rssi;
 }
 
 bool BLEDevice::discovered()
 {
-  // expect, 0x03 or 0x04 flag to be set
-  return (_advertisementTypeMask & 0x18) != 0;
+  return _discovered;
 }
 
