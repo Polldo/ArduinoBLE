@@ -41,6 +41,7 @@ set(DUT_SRCS
   ../../src/local/BLELocalDevice.cpp
   ../../src/local/BLELocalService.cpp
   ../../src/remote/BLERemoteAttribute.cpp
+  ../../src/remote/BLERemoteAdvertisingData.cpp
   ../../src/remote/BLERemoteCharacteristic.cpp
   ../../src/remote/BLERemoteDescriptor.cpp
   ../../src/remote/BLERemoteDevice.cpp

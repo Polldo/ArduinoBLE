@@ -39,7 +39,7 @@ TEST_CASE("BLE discovered device test", "[ArduinoBLE::BLEDevice]")
 
     // Simulate device discovery
     BLEDevice device = BLEDevice();
-    device.setAdvertisementData(0x03, eirLength, eirData, rssi); 
+    device.setAdvertisingData(eirLength, eirData, rssi); 
 
     bool hasName = device.hasLocalName();
     REQUIRE(hasName);
