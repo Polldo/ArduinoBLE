@@ -28,7 +28,7 @@ BLERemoteAdvertisingData::~BLERemoteAdvertisingData()
 {
 }
 
-const BLEAdvertisingRawData BLERemoteAdvertisingData::rawData() 
+const BLEAdvertisingRawData BLERemoteAdvertisingData::rawData() const
 {
   return _rawData;
 }

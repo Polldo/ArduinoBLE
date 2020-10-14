@@ -60,6 +60,9 @@ public:
   String advertisedServiceUuid() const;
   String advertisedServiceUuid(int index) const;
 
+  const BLEAdvertisingRawData advertisingData() const;
+  const BLEAdvertisingRawData scanResponseData() const;
+
   virtual int rssi();
 
   bool connect();

@@ -128,6 +128,16 @@ String BLEDevice::advertisedServiceUuid(int index) const
   return serviceUuid;
 }
 
+const BLEAdvertisingRawData BLEDevice::advertisingData() const
+{
+  return _advertisingData.rawData();
+}
+
+const BLEAdvertisingRawData BLEDevice::scanResponseData() const
+{
+  return _scanResponseData.rawData();
+}
+
 int BLEDevice::rssi()
 {
   uint16_t handle = ATT.connectionHandle(_addressType, _address);

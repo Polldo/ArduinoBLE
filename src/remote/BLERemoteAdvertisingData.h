@@ -35,7 +35,7 @@ public:
   String advertisedServiceUuid(int index) const;
   String localName() const;
 
-  const BLEAdvertisingRawData rawData();
+  const BLEAdvertisingRawData rawData() const;
 
 protected:
   friend class BLEDevice;
