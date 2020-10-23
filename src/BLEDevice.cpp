@@ -83,6 +83,11 @@ bool BLEDevice::hasLocalName() const
   return (localName().length() > 0);
 }
 
+bool BLEDevice::hasManufacturerData() const
+{
+  return (_advertisingData.hasManufacturerData() || _scanResponseData.hasManufacturerData());
+}
+
 bool BLEDevice::hasAdvertisedServiceUuid() const
 {
   return hasAdvertisedServiceUuid(0);
@@ -107,6 +112,14 @@ String BLEDevice::localName() const
     localName = _scanResponseData.localName();
   }
   return localName;
+}
+
+BLEAdvertisingRawData BLEDevice::manufacturerData() const
+{
+  if (_advertisingData.hasManufacturerData()) {
+    return _advertisingData.manufacturerData();
+  } 
+  return _scanResponseData.manufacturerData();
 }
 
 String BLEDevice::advertisedServiceUuid() const

@@ -53,6 +53,11 @@ bool BLERemoteAdvertisingData::hasAdvertisedServiceUuid(int index) const
   return (advertisedServiceUuid(index).length() > 0);
 }
 
+bool BLERemoteAdvertisingData::hasManufacturerData() const
+{
+  return (manufacturerData().length > 0);
+}
+
 int BLERemoteAdvertisingData::advertisedServiceUuidCount() const
 {
   int dataLength = _rawData.length;
@@ -145,4 +150,28 @@ String BLERemoteAdvertisingData::localName() const
   }
 
   return localName;
+}
+
+BLEAdvertisingRawData BLERemoteAdvertisingData::manufacturerData() const
+{
+  int dataLength = _rawData.length;
+  const uint8_t* data = _rawData.data;
+  BLEAdvertisingRawData manufacturerData;
+  manufacturerData.length = 0;
+
+  for (int i = 0; i < dataLength;) {
+    int eirLength = data[i++];
+    int eirType = data[i++];
+
+    if (eirType == BLEFieldManufacturerData) {
+      manufacturerData.length = eirLength - 1;
+
+      memcpy(manufacturerData.data, &data[i], manufacturerData.length);
+      break;
+    }
+
+    i += (eirLength - 1);
+  }
+
+  return manufacturerData;
 }

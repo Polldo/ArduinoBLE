@@ -51,12 +51,14 @@ public:
   virtual String address() const;
 
   bool hasLocalName() const;
+  bool hasManufacturerData() const;
     
   bool hasAdvertisedServiceUuid() const;
   bool hasAdvertisedServiceUuid(int index) const;
   int advertisedServiceUuidCount() const;
 
   String localName() const;
+  BLEAdvertisingRawData manufacturerData() const;
   String advertisedServiceUuid() const;
   String advertisedServiceUuid(int index) const;
 

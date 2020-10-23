@@ -30,10 +30,12 @@ public:
   bool hasLocalName() const;
   bool hasAdvertisedServiceUuid() const;
   bool hasAdvertisedServiceUuid(int index) const;
+  bool hasManufacturerData() const;
 
   int advertisedServiceUuidCount() const;
   String advertisedServiceUuid(int index) const;
   String localName() const;
+  BLEAdvertisingRawData manufacturerData() const;
 
   const BLEAdvertisingRawData rawData() const;
 
