@@ -278,6 +278,10 @@ void GAPClass::handleLeAdvertisingReport(uint8_t type, uint8_t addressType, uint
     return;
   }
 
+  // 0x00 = connectable undirected advertising
+  // 0x02 = scannable undirected advertising
+  // 0x03 = non connectable undirected advertising 
+  // 0x04 = scan response
   if (_discoverEventHandler && type == 0x03) {
     // call event handler and skip adding to discover list
     BLEDevice device(addressType, address);

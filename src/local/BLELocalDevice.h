@@ -41,6 +41,7 @@ public:
 
  int rssi();
 
+//change return value (in atomic commit)
   void setAdvertisedServiceUuid(const char* advertisedServiceUuid);
   void setAdvertisedService(const BLEService& service);
   void setManufacturerData(const uint8_t manufacturerData[], int manufacturerDataLength);

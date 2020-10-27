@@ -110,6 +110,8 @@ void HCIClass::poll(unsigned long timeout)
     HCITransport.wait(timeout);
   }
 
+  // solve packet drop -> avoid overflow
+
   while (HCITransport.available()) {
     byte b = HCITransport.read();
 

@@ -235,6 +235,9 @@ void ATTClass::addConnection(uint16_t handle, uint8_t role, uint8_t peerBdaddrTy
 {
   int peerIndex = -1;
 
+  // Check if the device is already connected (via address)
+  // This check will prevent problems during multi-connection 
+
   for (int i = 0; i < ATT_MAX_PEERS; i++) {
     if (_peers[i].connectionHandle == 0xffff) {
       peerIndex = i;
@@ -529,6 +532,8 @@ bool ATTClass::handleNotify(uint16_t handle, const uint8_t* value, int length)
     notificationLength += sizeof(handle);
 
     length = min((uint16_t)(_peers[i].mtu - notificationLength), (uint16_t)length);
+    Serial.println("msg length");
+    Serial.println(length);
     memcpy(&notification[notificationLength], value, length);
     notificationLength += length;
 
@@ -616,6 +621,7 @@ void ATTClass::mtuReq(uint16_t connectionHandle, uint8_t dlen, uint8_t data[])
   for (int i = 0; i < ATT_MAX_PEERS; i++) {
     if (_peers[i].connectionHandle == connectionHandle) {
       _peers[i].mtu = mtu;
+      Serial.println(mtu);
       break;
     }
   }

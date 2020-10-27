@@ -112,6 +112,9 @@ int BLELocalCharacteristic::writeValue(const uint8_t value[], int length)
     _valueLength = _valueSize;
   }
 
+  Serial.println(_valueSize);
+  Serial.println(_valueLength);
+
   if ((_properties & BLEIndicate) && (_cccdValue & 0x0002)) {
     return ATT.handleInd(valueHandle(), _value, _valueLength);
   } else if ((_properties & BLENotify) && (_cccdValue & 0x0001)) {
@@ -123,6 +126,7 @@ int BLELocalCharacteristic::writeValue(const uint8_t value[], int length)
 
     GAP.setAdvertisedServiceData(serviceUuid, value, length);
   
+    // could advertise also if connectedb
     if (!ATT.connected() && GAP.advertising()) {
       GAP.advertise();
     }
