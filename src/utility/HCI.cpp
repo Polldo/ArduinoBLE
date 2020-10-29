@@ -113,6 +113,10 @@ void HCIClass::poll(unsigned long timeout)
   while (HCITransport.available()) {
     byte b = HCITransport.read();
 
+    if (_recvIndex >= sizeof(_recvBuffer)) {
+      // flush the buffer
+      _recvIndex = 0;
+    }
     _recvBuffer[_recvIndex++] = b;
 
     if (_recvBuffer[0] == HCI_ACLDATA_PKT) {

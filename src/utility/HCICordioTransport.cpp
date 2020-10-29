@@ -287,6 +287,7 @@ void HCICordioTransportClass::handleRxData(uint8_t* data, uint8_t len)
 {
   if (_rxBuf.availableForStore() < len) {
     // drop!
+    Serial.println("drop");
     return;
   }
 
