@@ -184,6 +184,45 @@ String BLEDevice::advertisedServiceUuid(int index) const
   return serviceUuid;
 }
 
+int BLEDevice::advertisingData(int length, uint8_t data[]) const
+{
+  if (length > _eirDataLength) length = _eirDataLength;
+  memcpy(data, _eirData, length);
+  return length;
+}
+
+int BLEDevice::manufacturerData(int length, uint8_t data[]) const
+{
+  for (int i = 0; i < _eirDataLength;) {
+    int eirLength = _eirData[i++] - 1; // Don't consider type field for data length
+    int eirType = _eirData[i++];
+
+    if (eirType == 0xFF) {
+      if (length > eirLength) length = eirLength;
+      memcpy(data, &_eirData[i], length);
+      break;
+    }
+
+    i += eirLength;
+  }
+  return length;
+}
+
+bool BLEDevice::hasManufacturerData() const
+{
+  for (int i = 0; i < _eirDataLength;) {
+    int eirLength = _eirData[i++] - 1; // Don't consider type field for data length
+    int eirType = _eirData[i++];
+
+    if (eirType == 0xFF) {
+      return true;
+    }
+
+    i += eirLength;
+  }
+  return false;
+}
+
 int BLEDevice::rssi()
 {
   uint16_t handle = ATT.connectionHandle(_addressType, _address);

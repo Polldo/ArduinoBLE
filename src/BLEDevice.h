@@ -59,6 +59,10 @@ public:
   String advertisedServiceUuid() const;
   String advertisedServiceUuid(int index) const;
 
+  int advertisingData(int length, uint8_t data[]) const;
+  int manufacturerData(int length, uint8_t data[]) const;
+  bool hasManufacturerData() const;
+
   virtual int rssi();
 
   bool connect();
